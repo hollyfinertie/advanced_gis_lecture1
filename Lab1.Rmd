@@ -1,0 +1,67 @@
+---
+title: "lab1"
+author: "Holly Finertie"
+date: "1/22/2020"
+output: html_document
+---
+
+Install packages
+```{r}
+library(maps)
+```
+
+Clear visualization parameter
+```{r}
+oldpar = par()
+```
+
+World map exists in maps package. Low resolution = less accurate boundaries
+```{r, world}
+## pull world map
+world = map("world", res=0)
+
+##shows structure
+str(world)
+
+##shows structure and names of componenets
+head(world$names)
+
+##displays points are layed out and would create polygon shape file - not an actual spatial object-
+plot(world)
+```
+
+```{r, states}
+states = map("state", res = 0)
+str(states)
+head(states$names)
+plot(states)
+```
+
+```{r}
+library(maptools)
+
+## create lat/longitude projection (move from points to spatial object with coordinates)
+spworld = map2SpatialLines(world, proj4string = CRS("+proj=longlat"))
+spstates = map2SpatialLines(states, proj4string = CRS("+proj=longlat"))
+
+## shows structure
+str(spworld, max.level = 2)
+str(spstates,max.level = 2)
+
+## plot new spatial structures
+plot(spworld)
+plot(spstates)
+
+```
+
+```{r}
+## transform coordinate reference system 
+library(rgdal)
+
+## applies coordinate reference system to specific lat/long for the center or EPSG number
+world.laea <- spTransform(spworld, CRS("+proj=laea +lat_0=0 +lon_0=0"))
+states.laea <- spTransform(spstates, CRS("+proj=laea +lat_0=43.0758 +lon_0=-89.3976"))
+states.epsg <- spTransform(spstates, CRS("+init=epsg:3623"))
+```
+
+
